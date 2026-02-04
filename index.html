@@ -8,7 +8,7 @@
 body {
     height: 100vh;
     margin: 0;
-    background: radial-gradient(circle at top, #ffe6ee, #ffccd9);
+    background: linear-gradient(135deg, #ffe0ea, #fff5f8);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -25,14 +25,13 @@ body {
 h1 {
     color: #e6005c;
     font-size: 30px;
-    margin-bottom: 10px;
 }
 
 #text {
     font-size: 18px;
     color: #444;
-    min-height: 40px;
-    margin-bottom: 20px;
+    min-height: 45px;
+    margin: 15px 0;
 }
 
 button {
@@ -41,16 +40,11 @@ button {
     border: none;
     border-radius: 12px;
     cursor: pointer;
-    transition: transform 0.2s ease;
 }
 
 #yes {
     background: #ff4d79;
     color: white;
-}
-
-#yes:hover {
-    transform: scale(1.05);
 }
 
 #no {
@@ -59,16 +53,13 @@ button {
     position: absolute;
 }
 
-#final {
+#stage {
     display: none;
-}
-
-#final h2 {
-    color: #e6005c;
+    margin-top: 20px;
 }
 
 img {
-    width: 260px;
+    width: 240px;
     border-radius: 14px;
     margin-top: 15px;
 }
@@ -84,109 +75,88 @@ img {
     <button id="yes">Yes 💖</button>
     <button id="no">No 🙄</button>
 
-    <div id="final">
+    <div id="stage">
         <h2 id="finalText"></h2>
-        <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif">
+        <img id="gif" src="">
     </div>
 </div>
 
-<audio id="music" src="https://www.bensound.com/bensound-music/bensound-love.mp3"></audio>
+<!-- Piano instrumental style track -->
+<audio id="music" preload="auto">
+    <source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_1b8f2a6a8f.mp3" type="audio/mpeg">
+</audio>
 
 <script>
 const noBtn = document.getElementById("no");
 const yesBtn = document.getElementById("yes");
 const text = document.getElementById("text");
-const final = document.getElementById("final");
+const stage = document.getElementById("stage");
 const finalText = document.getElementById("finalText");
+const gif = document.getElementById("gif");
 const music = document.getElementById("music");
 
-const lines = [
-    "You’re really trying to say no?",
-    "That’s cute 😏",
+const teasingLines = [
+    "You can try 😌",
     "Still running?",
-    "Okay, I admire the effort.",
-    "But you know this ends one way.",
-    "Just click yes already 💕"
+    "That’s cute.",
+    "Okay… I’ll wait.",
+    "You already know the answer 💕"
+];
+
+const gifs = [
+    "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif",
+    "https://media.giphy.com/media/l4FGuhL4U2WyjdkaY/giphy.gif",
+    "https://media.giphy.com/media/26FLdmIp6wJr91JAI/giphy.gif"
 ];
 
 let attempts = 0;
 
-function typeEffect(element, message, speed = 40) {
-    element.textContent = "";
+function typeEffect(el, msg, speed = 40) {
+    el.textContent = "";
     let i = 0;
-    const interval = setInterval(() => {
-        element.textContent += message.charAt(i);
+    const t = setInterval(() => {
+        el.textContent += msg.charAt(i);
         i++;
-        if (i === message.length) clearInterval(interval);
+        if (i === msg.length) clearInterval(t);
     }, speed);
 }
 
-typeEffect(text, "Take your time. I’ll wait.");
+typeEffect(text, "Take your time. I’m right here.");
 
 noBtn.addEventListener("mouseover", () => {
     attempts++;
-    const x = Math.random() * (window.innerWidth - 140);
-    const y = Math.random() * (window.innerHeight - 80);
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
-
-    typeEffect(text, lines[attempts % lines.length]);
-
-    if (attempts > 4) {
-        yesBtn.textContent = "Okay… fine ❤️";
-    }
+    noBtn.style.left = Math.random() * (window.innerWidth - 140) + "px";
+    noBtn.style.top = Math.random() * (window.innerHeight - 80) + "px";
+    typeEffect(text, teasingLines[attempts % teasingLines.length]);
 });
 
 yesBtn.addEventListener("click", () => {
-    typeEffect(text, "Good choice. I knew you’d get there.");
-    
-    setTimeout(() => {
-        yesBtn.style.display = "none";
-        noBtn.style.display = "none";
-        text.style.display = "none";
-        final.style.display = "block";
-        music.play();
+    music.play();
 
-        typeEffect(
-            finalText,
-            "This isn’t about Valentine’s Day.\nIt’s about choosing each other — again and again."
-        );
+    yesBtn.style.display = "none";
+    noBtn.style.display = "none";
+    text.style.display = "none";
+    stage.style.display = "block";
 
-        launchConfetti();
-    }, 1200);
-});
+    let step = 0;
 
-function launchConfetti() {
-    for (let i = 0; i < 120; i++) {
-        const c = document.createElement("div");
-        c.style.position = "fixed";
-        c.style.width = "8px";
-        c.style.height = "8px";
-        c.style.background = `hsl(${Math.random()*360},100%,70%)`;
-        c.style.left = Math.random() * window.innerWidth + "px";
-        c.style.top = "-10px";
-        c.style.borderRadius = "50%";
-        c.style.opacity = 0.9;
-        document.body.appendChild(c);
+    const sequence = [
+        { msg: "I was hoping you’d say yes…", gif: gifs[0] },
+        { msg: "Because moments like this matter to me.", gif: gifs[1] },
+        { msg: "And so do you.", gif: gifs[2] },
+        { msg: "I love you Sohi ❤️✨", gif: gifs[2] }
+    ];
 
-        const fall = Math.random() * 3 + 2;
-        const drift = Math.random() * 2 - 1;
-
-        let y = -10;
-        let x = parseFloat(c.style.left);
-
-        const anim = setInterval(() => {
-            y += fall;
-            x += drift;
-            c.style.top = y + "px";
-            c.style.left = x + "px";
-            if (y > window.innerHeight) {
-                clearInterval(anim);
-                c.remove();
-            }
-        }, 16);
+    function nextStep() {
+        if (step >= sequence.length) return;
+        typeEffect(finalText, sequence[step].msg);
+        gif.src = sequence[step].gif;
+        step++;
+        setTimeout(nextStep, 2600);
     }
-}
+
+    nextStep();
+});
 </script>
 
 </body>
