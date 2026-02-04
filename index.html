@@ -28,22 +28,8 @@ body {
     100% { background-position: 0% 50%; }
 }
 
-/* Floating hearts */
-.heart {
-    position: fixed;
-    color: #ff4d79;
-    font-size: 18px;
-    pointer-events: none;
-    animation: floatUp 5s linear forwards;
-}
-
-@keyframes floatUp {
-    from { transform: translateY(0) scale(1); opacity: 1; }
-    to { transform: translateY(-250px) scale(1.4); opacity: 0; }
-}
-
 .container {
-    background: rgba(255,255,255,0.65);
+    background: rgba(255,255,255,0.7);
     backdrop-filter: blur(6px);
     padding: 26px;
     border-radius: 16px;
@@ -54,13 +40,11 @@ body {
 
 h1 {
     color: #e6005c;
-    margin-bottom: 8px;
 }
 
 #text {
-    font-size: 17px;
-    color: #444;
     min-height: 40px;
+    color: #444;
 }
 
 button {
@@ -72,11 +56,7 @@ button {
     cursor: pointer;
 }
 
-#yes {
-    background: #ff4d79;
-    color: white;
-}
-
+#yes { background: #ff4d79; color: white; }
 #no {
     background: #aaa;
     color: white;
@@ -86,6 +66,13 @@ button {
 #stage {
     display: none;
     margin-top: 20px;
+}
+
+#musicBtn {
+    display: none;
+    margin-top: 10px;
+    background: #fff;
+    border: 1px solid #ddd;
 }
 
 img {
@@ -108,11 +95,12 @@ img {
     <div id="stage">
         <h2 id="finalText"></h2>
         <img id="gif" src="">
+        <button id="musicBtn">▶ Play Music 🎵</button>
     </div>
 </div>
 
 <!-- Romantic Piano + Violin -->
-<audio id="music" preload="auto">
+<audio id="music" preload="metadata" controls style="display:none">
     <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7e6d3a4a91.mp3" type="audio/mpeg">
 </audio>
 
@@ -124,13 +112,14 @@ const stage = document.getElementById("stage");
 const finalText = document.getElementById("finalText");
 const gif = document.getElementById("gif");
 const music = document.getElementById("music");
+const musicBtn = document.getElementById("musicBtn");
 
 const teasing = [
     "You can try 😏",
     "Still running?",
     "That’s cute.",
     "Okay… I’ll wait.",
-    "You already know the answer"
+    "You already know the answer 💕"
 ];
 
 const gifs = [
@@ -149,14 +138,19 @@ noBtn.addEventListener("mouseover", () => {
     text.textContent = teasing[attempts % teasing.length];
 });
 
-yesBtn.addEventListener("click", () => {
-    music.volume = 0.6;
-    music.play().catch(()=>{});
-
+yesBtn.addEventListener("click", async () => {
     yesBtn.style.display = "none";
     noBtn.style.display = "none";
     text.style.display = "none";
     stage.style.display = "block";
+    musicBtn.style.display = "inline-block";
+
+    try {
+        music.volume = 0.6;
+        await music.play(); // attempt autoplay
+    } catch (e) {
+        // silently fail, user will tap play button
+    }
 
     let step = 0;
     const sequence = [
@@ -179,21 +173,13 @@ yesBtn.addEventListener("click", () => {
         step++;
         setTimeout(showNext, 2600);
     }
-
     showNext();
 });
 
-/* ambient hearts */
-setInterval(() => {
-    const h = document.createElement("div");
-    h.className = "heart";
-    h.textContent = "❤️";
-    h.style.left = Math.random() * window.innerWidth + "px";
-    h.style.top = "80%";
-    h.style.fontSize = (14 + Math.random() * 20) + "px";
-    document.body.appendChild(h);
-    setTimeout(() => h.remove(), 5000);
-}, 1200);
+musicBtn.addEventListener("click", () => {
+    music.volume = 0.6;
+    music.play();
+});
 </script>
 
 </body>
