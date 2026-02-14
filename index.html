@@ -17,6 +17,7 @@ body {
   background-size: 300% 300%;
   animation: bgMove 10s ease infinite;
   overflow: hidden;
+  cursor: pointer;
 }
 
 @keyframes bgMove {
@@ -37,6 +38,11 @@ body {
 
 h1 { color:#e6005c; }
 
+#tapText {
+  color:#666;
+  font-size:14px;
+}
+
 #stage { display:none; margin-top:20px; }
 
 img {
@@ -51,21 +57,24 @@ img {
 
 <div class="box">
   <h1>Sohini, will you be my Valentine? ❤️</h1>
+  <div id="tapText">Tap anywhere ❤️</div>
+
   <div id="stage">
     <h2 id="msg"></h2>
     <img id="gif" src="">
   </div>
 </div>
 
-<!-- Soft romantic piano -->
-<audio id="music" autoplay loop muted>
+<audio id="music" loop>
   <source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_1b8f2a6a8f.mp3" type="audio/mpeg">
 </audio>
 
 <script>
+const body = document.body;
 const stage = document.getElementById("stage");
 const msg = document.getElementById("msg");
 const gif = document.getElementById("gif");
+const tapText = document.getElementById("tapText");
 const music = document.getElementById("music");
 
 const sequence = [
@@ -79,7 +88,30 @@ const sequence = [
     gif:"https://media.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif"}
 ];
 
+let started = false;
 let step = 0;
+
+body.addEventListener("click", function startExperience() {
+  if(started) return;
+  started = true;
+
+  tapText.style.display = "none";
+  stage.style.display = "block";
+
+  music.volume = 0;
+  music.play();
+
+  // smooth fade-in
+  let fade = setInterval(()=>{
+    if(music.volume < 0.5){
+      music.volume += 0.02;
+    } else {
+      clearInterval(fade);
+    }
+  },200);
+
+  showNext();
+});
 
 function showNext(){
   if(step >= sequence.length) return;
@@ -88,12 +120,7 @@ function showNext(){
   step++;
   setTimeout(showNext,2500);
 }
+</script>
 
-stage.style.display = "block";
-showNext();
-
-/* Fade in music smoothly */
-music.volume = 0;
-setTimeout(()=>{
-  music.muted = false;
-  let
+</body>
+</html>
