@@ -1,200 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sohini ❤️</title>
 
 <style>
-html, body {
-    height: 100%;
-    margin: 0;
-    font-family: Arial, sans-serif;
-    overflow: hidden;
-}
-
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(120deg, #ffe0ea, #fff5f8, #ffe0ea);
-    background-size: 300% 300%;
-    animation: bgMove 12s ease infinite;
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(120deg,#ffe0ea,#fff5f8,#ffe0ea);
+  background-size: 300% 300%;
+  animation: bgMove 10s ease infinite;
+  overflow: hidden;
 }
 
 @keyframes bgMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+  0% {background-position:0% 50%;}
+  50% {background-position:100% 50%;}
+  100% {background-position:0% 50%;}
 }
 
-/* Floating hearts */
-.heart {
-    position: fixed;
-    color: #ff4d79;
-    font-size: 18px;
-    pointer-events: none;
-    animation: floatUp 5s linear forwards;
+.box {
+  background: rgba(255,255,255,0.75);
+  padding: 30px;
+  border-radius: 18px;
+  text-align: center;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
-@keyframes floatUp {
-    from { transform: translateY(0) scale(1); opacity: 1; }
-    to { transform: translateY(-250px) scale(1.4); opacity: 0; }
-}
+h1 { color:#e6005c; }
 
-.container {
-    background: rgba(255,255,255,0.65);
-    backdrop-filter: blur(6px);
-    padding: 26px;
-    border-radius: 16px;
-    text-align: center;
-    max-width: 90%;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-}
-
-h1 {
-    color: #e6005c;
-    margin-bottom: 8px;
-}
-
-#text {
-    font-size: 17px;
-    color: #444;
-    min-height: 40px;
-}
-
-button {
-    padding: 12px 26px;
-    font-size: 18px;
-    margin: 12px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-#yes {
-    background: #ff4d79;
-    color: white;
-}
-
-#no {
-    background: #aaa;
-    color: white;
-    position: absolute;
-}
-
-#stage {
-    display: none;
-    margin-top: 20px;
-}
+#stage { display:none; margin-top:20px; }
 
 img {
-    width: 240px;
-    border-radius: 14px;
-    margin-top: 15px;
+  width:220px;
+  border-radius:12px;
+  margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-    <h1>Sohini, will you be my Valentine? ❤️</h1>
-    <div id="text">Take your time… I’m right here.</div>
-
-    <button id="yes">Yes 💖</button>
-    <button id="no">No 🙄</button>
-
-    <div id="stage">
-        <h2 id="finalText"></h2>
-        <img id="gif" src="">
-    </div>
+<div class="box">
+  <h1>Sohini, will you be my Valentine? ❤️</h1>
+  <div id="stage">
+    <h2 id="msg"></h2>
+    <img id="gif" src="">
+  </div>
 </div>
 
-<!-- Romantic Piano + Violin -->
-<audio id="music" preload="auto">
-    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7e6d3a4a91.mp3" type="audio/mpeg">
+<!-- Soft romantic piano -->
+<audio id="music" autoplay loop muted>
+  <source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_1b8f2a6a8f.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-const noBtn = document.getElementById("no");
-const yesBtn = document.getElementById("yes");
-const text = document.getElementById("text");
 const stage = document.getElementById("stage");
-const finalText = document.getElementById("finalText");
+const msg = document.getElementById("msg");
 const gif = document.getElementById("gif");
 const music = document.getElementById("music");
 
-const teasing = [
-    "You can try 😏",
-    "Still running?",
-    "That’s cute.",
-    "Okay… I’ll wait.",
-    "You already know the answer 💕"
+const sequence = [
+  { text:"I was hoping you'd see this…",
+    gif:"https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif"},
+  { text:"Because moments like this matter to me.",
+    gif:"https://media.giphy.com/media/l4FGuhL4U2WyjdkaY/giphy.gif"},
+  { text:"And so do you.",
+    gif:"https://media.giphy.com/media/26FLdmIp6wJr91JAI/giphy.gif"},
+  { text:"I love you Sohi ❤️✨",
+    gif:"https://media.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif"}
 ];
 
-const gifs = [
-    "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif",
-    "https://media.giphy.com/media/l4FGuhL4U2WyjdkaY/giphy.gif",
-    "https://media.giphy.com/media/26FLdmIp6wJr91JAI/giphy.gif",
-    "https://media.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif"
-];
+let step = 0;
 
-let attempts = 0;
+function showNext(){
+  if(step >= sequence.length) return;
+  msg.textContent = sequence[step].text;
+  gif.src = sequence[step].gif;
+  step++;
+  setTimeout(showNext,2500);
+}
 
-noBtn.addEventListener("mouseover", () => {
-    attempts++;
-    noBtn.style.left = Math.random() * (window.innerWidth - 120) + "px";
-    noBtn.style.top = Math.random() * (window.innerHeight - 60) + "px";
-    text.textContent = teasing[attempts % teasing.length];
-});
+stage.style.display = "block";
+showNext();
 
-yesBtn.addEventListener("click", () => {
-    music.volume = 0.6;
-    music.play().catch(()=>{});
-
-    yesBtn.style.display = "none";
-    noBtn.style.display = "none";
-    text.style.display = "none";
-    stage.style.display = "block";
-
-    let step = 0;
-    const sequence = [
-        { msg: "I was hoping you’d say yes…", gif: gifs[0] },
-        { msg: "Because moments like this matter to me.", gif: gifs[1] },
-        { msg: "And so do you.", gif: gifs[2] },
-        { msg: "I love you Sohi ❤️✨", gif: gifs[3] }
-    ];
-
-    function showNext() {
-        if (step >= sequence.length) return;
-        finalText.textContent = "";
-        let i = 0;
-        const typing = setInterval(() => {
-            finalText.textContent += sequence[step].msg.charAt(i);
-            i++;
-            if (i === sequence[step].msg.length) clearInterval(typing);
-        }, 35);
-        gif.src = sequence[step].gif;
-        step++;
-        setTimeout(showNext, 2600);
-    }
-
-    showNext();
-});
-
-/* ambient hearts */
-setInterval(() => {
-    const h = document.createElement("div");
-    h.className = "heart";
-    h.textContent = "❤️";
-    h.style.left = Math.random() * window.innerWidth + "px";
-    h.style.top = "80%";
-    h.style.fontSize = (14 + Math.random() * 20) + "px";
-    document.body.appendChild(h);
-    setTimeout(() => h.remove(), 5000);
-}, 1200);
-</script>
-
-</body>
-</html>
+/* Fade in music smoothly */
+music.volume = 0;
+setTimeout(()=>{
+  music.muted = false;
+  let
