@@ -2,62 +2,66 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sohini ❤️</title>
 
 <style>
 body {
-  margin: 0;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #ffe6ee;
-  font-family: Arial, sans-serif;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, #ffe0ea, #fff5f8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
 }
 
 .box {
-  background: white;
-  padding: 30px;
-  border-radius: 18px;
-  text-align: center;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    text-align: center;
+    padding: 25px;
+    max-width: 90%;
 }
 
 h1 {
-  color: #e6005c;
+    color: #e6005c;
+    font-size: 30px;
+}
+
+#text {
+    font-size: 18px;
+    color: #444;
+    min-height: 45px;
+    margin: 15px 0;
 }
 
 button {
-  padding: 12px 24px;
-  font-size: 18px;
-  margin: 10px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
+    padding: 14px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
 }
 
 #yes {
-  background: #ff4d79;
-  color: white;
+    background: #ff4d79;
+    color: white;
 }
 
-#musicBtn {
-  background: #fff;
-  border: 1px solid #ddd;
+#no {
+    background: #aaa;
+    color: white;
+    position: absolute;
 }
 
 #stage {
-  display: none;
-  margin-top: 20px;
+    display: none;
+    margin-top: 20px;
 }
 
 img {
-  width: 220px;
-  border-radius: 12px;
-  margin-top: 10px;
+    width: 240px;
+    border-radius: 14px;
+    margin-top: 15px;
 }
 </style>
 </head>
@@ -65,57 +69,94 @@ img {
 <body>
 
 <div class="box">
-  <h1>Sohini, will you be my Valentine? ❤️</h1>
+    <h1>Sohini, will you be my Valentine? ❤️</h1>
+    <div id="text"></div>
 
-  <button id="yes">Yes 💖</button>
-  <button id="musicBtn">▶ Play Music 🎵</button>
+    <button id="yes">Yes 💖</button>
+    <button id="no">No 🙄</button>
 
-  <div id="stage">
-    <h2 id="msg"></h2>
-    <img id="gif" src="">
-  </div>
+    <div id="stage">
+        <h2 id="finalText"></h2>
+        <img id="gif" src="">
+    </div>
 </div>
 
-<audio id="music">
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7e6d3a4a91.mp3" type="audio/mpeg">
+<!-- Piano instrumental style track -->
+<audio id="music" preload="auto">
+    <source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_1b8f2a6a8f.mp3" type="audio/mpeg">
 </audio>
 
 <script>
+const noBtn = document.getElementById("no");
 const yesBtn = document.getElementById("yes");
-const musicBtn = document.getElementById("musicBtn");
+const text = document.getElementById("text");
 const stage = document.getElementById("stage");
-const msg = document.getElementById("msg");
+const finalText = document.getElementById("finalText");
 const gif = document.getElementById("gif");
 const music = document.getElementById("music");
 
-const sequence = [
-  { text: "I was hoping you'd say yes…", gif: "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif" },
-  { text: "Because moments like this matter to me.", gif: "https://media.giphy.com/media/l4FGuhL4U2WyjdkaY/giphy.gif" },
-  { text: "And so do you.", gif: "https://media.giphy.com/media/26FLdmIp6wJr91JAI/giphy.gif" },
-  { text: "I love you Sohi ❤️✨", gif: "https://media.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif" }
+const teasingLines = [
+    "You can try 😌",
+    "Still running?",
+    "That’s cute.",
+    "Okay… I’ll wait.",
+    "You already know the answer 💕"
 ];
 
-let step = 0;
+const gifs = [
+    "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif",
+    "https://media.giphy.com/media/l4FGuhL4U2WyjdkaY/giphy.gif",
+    "https://media.giphy.com/media/26FLdmIp6wJr91JAI/giphy.gif"
+];
+
+let attempts = 0;
+
+function typeEffect(el, msg, speed = 40) {
+    el.textContent = "";
+    let i = 0;
+    const t = setInterval(() => {
+        el.textContent += msg.charAt(i);
+        i++;
+        if (i === msg.length) clearInterval(t);
+    }, speed);
+}
+
+typeEffect(text, "Take your time. I’m right here.");
+
+noBtn.addEventListener("mouseover", () => {
+    attempts++;
+    noBtn.style.left = Math.random() * (window.innerWidth - 140) + "px";
+    noBtn.style.top = Math.random() * (window.innerHeight - 80) + "px";
+    typeEffect(text, teasingLines[attempts % teasingLines.length]);
+});
 
 yesBtn.addEventListener("click", () => {
-  stage.style.display = "block";
-  yesBtn.style.display = "none";
+    music.play();
 
-  showNext();
+    yesBtn.style.display = "none";
+    noBtn.style.display = "none";
+    text.style.display = "none";
+    stage.style.display = "block";
+
+    let step = 0;
+
+    const sequence = [
+        { msg: "I was hoping you’d say yes…", gif: gifs[0] },
+        { msg: "Because moments like this matter to me.", gif: gifs[1] },
+        { msg: "And so do you.", gif: gifs[2] },
+        { msg: "I love you Sohi ❤️✨", gif: gifs[2] }
+    ];
+
+    function nextStep() {
+        if (step >= sequence.length) return;
+        typeEffect(finalText, sequence[step].msg);
+        gif.src = sequence[step].gif;
+        step++;
+        setTimeout(nextStep, 2600);
+    }
+
+    nextStep();
 });
-
-musicBtn.addEventListener("click", () => {
-  music.volume = 0.6;
-  music.play();
-});
-
-function showNext() {
-  if (step >= sequence.length) return;
-  msg.textContent = sequence[step].text;
-  gif.src = sequence[step].gif;
-  step++;
-  setTimeout(showNext, 2500);
-}
 </script>
 
 </body>
