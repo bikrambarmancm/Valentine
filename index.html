@@ -1,163 +1,323 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Sohini ❤️</title>
-
+<link rel="preload" href="https://cdn.pixabay.com/download/audio/2022/10/25/audio_1b8f2a6a8f.mp3" as="audio">
 <style>
-body {
-    height: 100vh;
-    margin: 0;
-    background: linear-gradient(135deg, #ffe0ea, #fff5f8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: 'Arial', sans-serif;
-    overflow: hidden;
-}
+  :root{
+    --accent:#ff4d79;
+    --text:#3b3b3b;
+    --pink1:#ffe6ee;
+    --pink2:#ffd0df;
+  }
+  html,body{height:100%;margin:0;font-family:Inter, system-ui, Arial, sans-serif; -webkit-font-smoothing:antialiased;}
+  body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    background:linear-gradient(135deg,var(--pink1),#fff0f6 40%, #fff 100%);
+    position:relative;
+  }
 
-.box {
-    text-align: center;
-    padding: 25px;
-    max-width: 90%;
-}
+  /* animated soft gradient shift */
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%;}
+    50% { background-position: 100% 50%;}
+    100% { background-position: 0% 50%;}
+  }
+  body::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background: linear-gradient(120deg, rgba(255, 140, 170, 0.12), rgba(255,0,100,0.06) 35%, rgba(255,255,255,0.02));
+    pointer-events:none;
+    mix-blend-mode:soft-light;
+    animation: gradientShift 12s ease infinite;
+  }
 
-h1 {
-    color: #e6005c;
-    font-size: 30px;
-}
+  /* bokeh circles */
+  .bokeh{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+  }
+  .bokeh span{
+    position:absolute;
+    width:40px;
+    height:40px;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.1));
+    filter: blur(10px);
+    opacity:.12;
+    border-radius:50%;
+    transform:translate3d(0,0,0);
+    animation: floaty linear infinite;
+  }
+  @keyframes floaty {
+    from { transform: translateY(0) scale(0.9); }
+    to   { transform: translateY(-120px) scale(1.2); }
+  }
 
-#text {
-    font-size: 18px;
-    color: #444;
-    min-height: 45px;
-    margin: 15px 0;
-}
+  /* floating hearts (CSS generated via JS) */
+  .heart {
+    position:fixed;
+    width:18px; height:18px;
+    transform:translate(-50%,-50%) rotate(0deg);
+    pointer-events:none;
+    opacity:0.95;
+    will-change: transform, top;
+  }
 
-button {
-    padding: 14px 30px;
-    font-size: 18px;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-}
+  .card {
+    z-index:10;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    padding:26px;
+    border-radius:16px;
+    background:linear-gradient(180deg, rgba(255,255,255,0.65), rgba(255,255,255,0.50));
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    text-align:center;
+    max-width:720px;
+    width:92%;
+    backdrop-filter: blur(6px) saturate(120%);
+  }
 
-#yes {
-    background: #ff4d79;
-    color: white;
-}
+  h1{ color:var(--accent); font-size:26px; margin:2px 0 8px; letter-spacing:0.2px }
+  #subtitle{ color:var(--text); margin:0 0 14px; font-size:16px }
 
-#no {
-    background: #aaa;
-    color: white;
-    position: absolute;
-}
+  .controls{display:flex; gap:12px; align-items:center; justify-content:center; margin-top:6px; flex-wrap:wrap}
+  button.cta{
+    padding:12px 20px; border-radius:10px; border:0; font-size:16px; cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  button#yes{ background:var(--accent); color:#fff; box-shadow:0 6px 18px rgba(255,77,121,0.18); }
+  button#no{ background:#bdbdbd; color:#fff; position:absolute; }
 
-#stage {
-    display: none;
-    margin-top: 20px;
-}
+  button.cta:active{ transform:scale(.98) }
 
-img {
-    width: 240px;
-    border-radius: 14px;
-    margin-top: 15px;
-}
+  #stage { margin-top:18px; min-height:160px; display:flex; flex-direction:column; align-items:center; gap:10px; }
+
+  /* GIF card */
+  .gif {
+    width:260px; max-width:60%;
+    border-radius:12px; overflow:hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  }
+  .gif img{ display:block; width:100%; height:auto; }
+
+  #finalText{ font-size:20px; color:var(--text); white-space:pre-line; line-height:1.2; }
+
+  /* small audio bar + visible play button */
+  .audioBar{ display:flex; gap:10px; align-items:center; margin-top:8px; }
+  .playBtn{ background:#fff; border:1px solid #eee; padding:8px 12px; border-radius:10px; cursor:pointer; }
+  .playBtn.playing { box-shadow:0 8px 20px rgba(0,0,0,0.08); transform:translateY(-2px); }
+
+  /* responsive */
+  @media (max-width:420px){
+    h1{font-size:20px}
+    .gif{ width:200px }
+  }
 </style>
 </head>
-
 <body>
+  <div class="bokeh" id="bokeh"></div>
 
-<div class="box">
+  <div class="card" role="main" aria-live="polite">
     <h1>Sohini, will you be my Valentine? ❤️</h1>
-    <div id="text"></div>
+    <div id="subtitle">Take your time. I'm right here.</div>
 
-    <button id="yes">Yes 💖</button>
-    <button id="no">No 🙄</button>
-
-    <div id="stage">
-        <h2 id="finalText"></h2>
-        <img id="gif" src="">
+    <div class="controls">
+      <button id="yes" class="cta">Yes 💖</button>
+      <button id="no" class="cta">No 🙄</button>
     </div>
-</div>
 
-<!-- Piano instrumental style track -->
-<audio id="music" preload="auto">
-    <source src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_1b8f2a6a8f.mp3" type="audio/mpeg">
-</audio>
+    <div id="stage" aria-hidden="true">
+      <div id="finalText"></div>
+      <div class="gif" id="gifWrap" aria-hidden="true"><img id="gifImg" src="" alt="cute gif"></div>
+
+      <div class="audioBar">
+        <!-- Visible play button (mobile friendly) -->
+        <button id="playBtn" class="playBtn">▶ Play piano</button>
+        <div id="audioNote" style="font-size:13px;color:#666">If you want the actual Love Story piano, upload your file as <code>love_story_piano.mp3</code> to this folder and it will play.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- fallback piano (royalty-free) is used unless you replace the src with your own track -->
+  <audio id="music" preload="auto">
+    <source id="musicSource" src="https://cdn.pixabay.com/download/audio/2022/10/25/audio_1b8f2a6a8f.mp3" type="audio/mpeg">
+    <!-- Replace the above src with 'love_story_piano.mp3' if you upload your own file -->
+    Your browser does not support the audio element.
+  </audio>
 
 <script>
-const noBtn = document.getElementById("no");
-const yesBtn = document.getElementById("yes");
-const text = document.getElementById("text");
-const stage = document.getElementById("stage");
-const finalText = document.getElementById("finalText");
-const gif = document.getElementById("gif");
-const music = document.getElementById("music");
+/* ========== quickly populate soft bokeh ========== */
+(function makeBokeh(){
+  const b = document.getElementById('bokeh');
+  const count = 8;
+  for(let i=0;i<count;i++){
+    const s = document.createElement('span');
+    s.style.left = Math.random()*100 + '%';
+    s.style.top = (80 + Math.random()*20) + '%';
+    s.style.width = (30 + Math.random()*60) + 'px';
+    s.style.height = s.style.width;
+    s.style.opacity = (0.06 + Math.random()*0.12);
+    s.style.animationDuration = (10 + Math.random()*8) + 's';
+    s.style.animationDelay = (Math.random()*-6) + 's';
+    b.appendChild(s);
+  }
+})();
 
-const teasingLines = [
-    "You can try 😌",
-    "Still running?",
-    "That’s cute.",
-    "Okay… I’ll wait.",
-    "You already know the answer 💕"
+/* ========== floating hearts generator (ambient) ========== */
+function spawnHeart(x,y){
+  const el = document.createElement('div');
+  el.className = 'heart';
+  el.innerHTML = '❤️';
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  el.style.fontSize = (12 + Math.random()*18) + 'px';
+  document.body.appendChild(el);
+  const duration = 3000 + Math.random()*2000;
+  const drift = (Math.random()-0.5)*80;
+  let start = null;
+  function tick(ts){
+    if(!start) start = ts;
+    const t = ts - start;
+    const progress = t / duration;
+    el.style.top = (y - progress*(200 + Math.random()*150)) + 'px';
+    el.style.left = (x + drift*progress) + 'px';
+    el.style.opacity = String(1 - progress);
+    el.style.transform = 'rotate(' + (progress*240) + 'deg) scale(' + (1 + progress*0.12) + ')';
+    if(progress < 1) requestAnimationFrame(tick);
+    else el.remove();
+  }
+  requestAnimationFrame(tick);
+}
+
+/* gently spawn background hearts every now and then */
+setInterval(()=> {
+  const x = window.innerWidth * (0.1 + Math.random()*0.8);
+  const y = window.innerHeight * (0.8 + Math.random()*0.15);
+  spawnHeart(x,y);
+}, 1200);
+
+/* ========== interactive logic: gifs, typing, music triggers ========== */
+const noBtn = document.getElementById('no');
+const yesBtn = document.getElementById('yes');
+const stage = document.getElementById('stage');
+const finalText = document.getElementById('finalText');
+const gifImg = document.getElementById('gifImg');
+const music = document.getElementById('music');
+const playBtn = document.getElementById('playBtn');
+
+const teasing = [
+  "You can try 😏",
+  "Still running?",
+  "That’s cute.",
+  "Okay… I’ll wait.",
+  "You already know the answer 💕"
 ];
 
 const gifs = [
-    "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif",
-    "https://media.giphy.com/media/l4FGuhL4U2WyjdkaY/giphy.gif",
-    "https://media.giphy.com/media/26FLdmIp6wJr91JAI/giphy.gif"
+  "https://media.giphy.com/media/MDJ9IbxxvDUQM/giphy.gif",
+  "https://media.giphy.com/media/l4FGuhL4U2WyjdkaY/giphy.gif",
+  "https://media.giphy.com/media/26FLdmIp6wJr91JAI/giphy.gif",
+  "https://media.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif"
 ];
 
-let attempts = 0;
-
-function typeEffect(el, msg, speed = 40) {
-    el.textContent = "";
-    let i = 0;
-    const t = setInterval(() => {
-        el.textContent += msg.charAt(i);
-        i++;
-        if (i === msg.length) clearInterval(t);
-    }, speed);
-}
-
-typeEffect(text, "Take your time. I’m right here.");
-
-noBtn.addEventListener("mouseover", () => {
-    attempts++;
-    noBtn.style.left = Math.random() * (window.innerWidth - 140) + "px";
-    noBtn.style.top = Math.random() * (window.innerHeight - 80) + "px";
-    typeEffect(text, teasingLines[attempts % teasingLines.length]);
+let tries = 0;
+noBtn.addEventListener('mouseover', (e)=> {
+  tries++;
+  // move
+  const x = Math.random()*(window.innerWidth-140);
+  const y = Math.random()*(window.innerHeight-80);
+  noBtn.style.left = x + 'px';
+  noBtn.style.top = y + 'px';
+  // tease text
+  finalText.textContent = teasing[tries%teasing.length];
 });
 
-yesBtn.addEventListener("click", () => {
-    music.play();
-
-    yesBtn.style.display = "none";
-    noBtn.style.display = "none";
-    text.style.display = "none";
-    stage.style.display = "block";
-
-    let step = 0;
-
-    const sequence = [
-        { msg: "I was hoping you’d say yes…", gif: gifs[0] },
-        { msg: "Because moments like this matter to me.", gif: gifs[1] },
-        { msg: "And so do you.", gif: gifs[2] },
-        { msg: "I love you Sohi ❤️✨", gif: gifs[2] }
-    ];
-
-    function nextStep() {
-        if (step >= sequence.length) return;
-        typeEffect(finalText, sequence[step].msg);
-        gif.src = sequence[step].gif;
-        step++;
-        setTimeout(nextStep, 2600);
+/* play/pause button that user can press any time */
+let isPlaying = false;
+playBtn.addEventListener('click', async () => {
+  try {
+    if(!isPlaying){
+      await music.play();
+      isPlaying = true;
+      playBtn.textContent = '⏸ Pause piano';
+      playBtn.classList.add('playing');
+    } else {
+      music.pause();
+      isPlaying = false;
+      playBtn.textContent = '▶ Play piano';
+      playBtn.classList.remove('playing');
     }
-
-    nextStep();
+  } catch(err){
+    // autoplay blocked: fallback to unmuted play permission — instruct user
+    console.warn('Playback error:', err);
+    alert('Tap the Play button to allow music on this device.');
+  }
 });
-</script>
 
+/* sequence on Yes click: reveal gifs step-by-step and final message */
+yesBtn.addEventListener('click', async () => {
+  // ensure stage visible
+  stage.setAttribute('aria-hidden','false');
+
+  // attempt to play music; browsers require user gesture — this click qualifies
+  try { await music.play(); isPlaying = true; playBtn.textContent = '⏸ Pause piano'; playBtn.classList.add('playing'); } catch(e) { /* ignore */ }
+
+  // hide buttons to focus
+  yesBtn.style.transform = 'scale(.96)';
+  yesBtn.disabled = true;
+  noBtn.style.display = 'none';
+
+  // sequential reveal
+  const seq = [
+    { text: "I was hoping you’d say yes…", gif: gifs[0], time: 2000 },
+    { text: "Because moments like this matter to me.", gif: gifs[1], time: 2400 },
+    { text: "And so do you.", gif: gifs[2], time: 2400 },
+    { text: "I love you Sohi ❤️✨", gif: gifs[3], time: 3000 }
+  ];
+
+  let i = 0;
+  function next(){
+    if(i>=seq.length) return;
+    finalText.textContent = '';
+    // typing effect
+    const msg = seq[i].text;
+    let k=0;
+    const typer = setInterval(()=> {
+      finalText.textContent += msg.charAt(k);
+      k++;
+      if(k>=msg.length) clearInterval(typer);
+    }, 28);
+    gifImg.src = seq[i].gif;
+    i++;
+    setTimeout(next, seq[i-1].time);
+  }
+  next();
+});
+
+/* ========== helper: let the user drop their own music file (optional) ========== */
+/* If you upload 'love_story_piano.mp3' to the same folder, uncomment the next block to switch the source automatically.
+   Or replace the <source> src in the HTML to 'love_story_piano.mp3' before pushing to GitHub.
+*/
+/*
+fetch('love_story_piano.mp3', {method:'HEAD'}).then(res=>{
+  if(res.ok){
+    // a piano file exists in the same folder, switch to it
+    document.getElementById('musicSource').src = 'love_story_piano.mp3';
+    music.load();
+    document.getElementById('audioNote').textContent = 'Using your uploaded piano: love_story_piano.mp3';
+  }
+}).catch(()=>{});
+*/
+
+</script>
 </body>
 </html>
